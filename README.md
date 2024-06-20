@@ -33,7 +33,7 @@ Back-End
 - **Node.js**: JavaScript runtime built on Chrome's V8 JavaScript engine, used for backend development.
 - **Express.js**: A minimal and flexible Node.js web application framework.
 
-Front-End [View]('https://github.com/smitkevadiya50/CRM')
+Front-End [View](https://github.com/smitkevadiya50/CRM)
 - **React**: A JavaScript library for building user interfaces.
 - **Tailwind CSS**: A utility-first CSS framework for rapid UI development.
 - **Material UI**: A popular React UI framework that provides pre-designed components.
