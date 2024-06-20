@@ -32,6 +32,7 @@ Back-End
 - **Axios**: A promise-based HTTP client for making API requests.
 - **Node.js**: JavaScript runtime built on Chrome's V8 JavaScript engine, used for backend development.
 - **Express.js**: A minimal and flexible Node.js web application framework.
+- **MongoDB**: A NoSQL database used for storing and managing the application's data.
 
 Front-End [View](https://github.com/smitkevadiya50/CRM)
 - **React**: A JavaScript library for building user interfaces.
