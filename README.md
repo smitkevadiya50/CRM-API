@@ -2,29 +2,7 @@
 
 ## Overview
 
-This Customer Relationship Management (CRM) project is a web application designed to manage customer data, track interactions, and streamline various business processes. It offers a comprehensive set of features to handle customer information, employee assignments, and site management effectively. The CRM system is built using Node.js for the backend, with Express.js for routing and MongoDB for the database. The frontend utilizes React, Tailwind CSS, and Material UI for the user interface.
-
-## Features
-
-Dashboard
-
-- **Site Dashboard**: View and manage all construction sites, including details such as site name, location, owner information, and assigned employees.
-- **Employee Dashboard**: Overview of all employees categorized by their roles (supervisors, managers, workers, helpers) with detailed information and easy management.
-
-Employee Management
-- **Categorized Employees**: Employees are categorized into supervisors, managers, workers, and helpers, allowing for easy management and assignment.
-- **Add/Update Employees**: Add new employees or update existing employee details through intuitive forms.
-- **Search and Select**: Use search-enabled dropdowns to quickly find and select employees when assigning roles.
-
-## Site Management
-
-- **Site Information**: Manage detailed information about each site including name, location, owner, assigned employees, joining and ending dates, and site logo.
-- **Add/Update Sites**: Easily add new sites or update existing site details through a user-friendly form.
-Assign Employees: Assign supervisors, managers, workers, and helpers to sites with search-enabled selection fields.
-Real-Time Data
-- **API Integration**: The application integrates with backend APIs to fetch and update data in real-time, ensuring the latest information is always available.
-- **Loader for Data Fetching**: Displays a loader while fetching data from the server, ensuring users are aware of ongoing processes.
-
+This Customer Relationship Management (CRM) project is a web application designed to manage customer data, track interactions, and streamline various business processes. It offers a comprehensive set of features to handle customer information, employee assignments, employee attendance and site management effectively. The CRM system is built using Node.js for the backend, with Express.js for routing and MongoDB for the database. The frontend utilizes React, Tailwind CSS, and Material UI for the user interface.
 
 ## Technologies Used
 
@@ -109,3 +87,11 @@ http://127.0.0.1:3001
 - **URL:** `/category`
 - **Method:** `GET`
 - **Role:** Retrieves a list of all categories in the CRM system.
+
+### Attendance Endpoints
+
+#### Add Attendance
+- **URL:** `/attendance/start`
+- **URL:** `/attendance/end`
+- **Method:** `POST`
+- **Role:** Make an attendance of the employee for Start time and end time in the CRM system.

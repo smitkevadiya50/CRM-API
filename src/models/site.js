@@ -45,6 +45,14 @@ const siteSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  start_time:{
+    type: String,
+    required: true,
+  },
+  end_time: {
+    type: String,
+    required: true,
+  },
   site_logo: {
     type: String,
     required: true,

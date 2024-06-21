@@ -8,6 +8,7 @@ const cors = require('cors');
 const employeeRoutes = require('./src/routes/employeeRoutes');
 const siteRoutes = require('./src/routes/siteRoutes');
 const categoryRoutes = require('./src/routes/categoryRoutes');
+const attendanceRoutes = require('./src/routes/attendanceRoutes');
 
 // Middleware to parse JSON
 app.use(express.json());
@@ -31,6 +32,7 @@ db.once('open', () => {
 app.use('/employee', employeeRoutes);
 app.use('/site', siteRoutes);
 app.use('/category', categoryRoutes);
+app.use('/attendance', attendanceRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 3000;

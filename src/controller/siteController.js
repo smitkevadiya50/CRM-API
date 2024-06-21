@@ -11,7 +11,7 @@ const getSite = async (req, res) => {
 
 const addSite = async (req, res) => {
     try {
-        const { site_name, site_location, owner_name, owner_number, supervisor, manager, worker, helper, joining_date, ending_date, site_logo } = req.body;
+        const { site_name, site_location, owner_name, owner_number, supervisor, manager, worker, helper, joining_date, ending_date, start_time, end_time, site_logo } = req.body;
 
         // Create a new site document
         const newSite = new Site({
@@ -25,6 +25,8 @@ const addSite = async (req, res) => {
             helper,
             joining_date,
             ending_date,
+            start_time,
+            end_time,
             site_logo
         });
 
