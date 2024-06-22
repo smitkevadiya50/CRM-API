@@ -19,23 +19,19 @@ const siteSchema = new mongoose.Schema({
   },
   supervisor: {
     type: mongoose.Schema.ObjectId,
-    ref: 'Employee',
-    required: true,
+    ref: 'Employee'
   },
   manager: {
     type: mongoose.Schema.ObjectId,
-    ref: 'Employee',
-    required: true,
+    ref: 'Employee'
   },
   worker: {
     type: [mongoose.Schema.ObjectId],
-    ref: 'Employee',
-    required: true,
+    ref: 'Employee'
   },
   helper: {
     type: [mongoose.Schema.ObjectId],
-    ref: 'Employee',
-    required: true,
+    ref: 'Employee'
   },
   joining_date: {
     type: Date,

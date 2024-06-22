@@ -1,4 +1,9 @@
 const Employee = require('../models/employee');
+const {saveImageFile, deleteImageFile} = require('./imageUploadController')
+const Attendance = require('../models/attendance');
+const fs = require('fs');
+const path = require('path');
+
 
 const getEmployee = async (req, res) => {
     try {
@@ -11,31 +16,54 @@ const getEmployee = async (req, res) => {
 };
 
 const addEmployee = async (req, res) => {
-    try {
-        const { name, reference_name, age, number,address, category, joining_date, photo, adhar_photo } = req.body;
+  try {
+    const { name, reference_name, age, number, address, category, joining_date } = req.body;
 
-        // Create a new employee document
-        const newEmployee = new Employee({
-            name,
-            reference_name,
-            age,
-            number,
-            address,
-            category,
-            joining_date,
-            photo,
-            adhar_photo
-        });
+    // Ensure req.files is defined and properly handles missing files
+    const photoFile = req.files && req.files['photo'] ? req.files['photo'][0] : null;
+    const adharPhotoFile = req.files && req.files['adhar_photo'] ? req.files['adhar_photo'][0] : null;
 
-        // Save the employee document to the database
-        const savedEmployee = await newEmployee.save();
-
-        // Send the saved employee as the response
-        res.status(201).json(savedEmployee);
-    } catch (error) {
-        res.status(500).json({ message: error.message});
+    // Check if photo file is present
+    if (!photoFile) {
+      throw new Error('Photo file is required');
     }
+
+    // Check if adhar photo file is present
+    if (!adharPhotoFile) {
+      throw new Error('Adhar photo file is required');
+    }
+
+    // Create a new employee document
+    const newEmployee = new Employee({
+      name,
+      reference_name,
+      age,
+      number,
+      address,
+      category,
+      joining_date
+    });
+
+    const newEmployeeId = newEmployee._id;
+
+    // Handle photo upload
+    const photoPath = await saveImageFile('profile', `${newEmployeeId}`, photoFile);
+    newEmployee.photo = process.env.BASE_URL + photoPath.filePath;
+
+    // Handle adhar photo upload
+    const adharPath = await saveImageFile('adhar', `${newEmployeeId}`, adharPhotoFile);
+    newEmployee.adhar_photo = process.env.BASE_URL + adharPath.filePath;
+
+    // Save the employee document to the database
+    const savedEmployee = await newEmployee.save();
+
+    // Send the saved employee as the response
+    res.status(201).json(savedEmployee);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
+
 
 const deleteEmployee = async (req, res) => {
     try {
@@ -44,6 +72,10 @@ const deleteEmployee = async (req, res) => {
 
         // Delete the employee by ID
         const deletedEmployee = await Employee.findByIdAndDelete(id);
+        deleteImageFile('profile', id);
+        deleteImageFile('adhar', id);
+       // Delete all attendance records where user ID matches
+       await Attendance.deleteMany({ employee_id: id });
 
         if (!deletedEmployee) {
             return res.status(404).json({ message: 'Employee not found' });
@@ -60,11 +92,35 @@ const updateEmployee = async (req, res) => {
       // Extract the employee ID from the request parameters
       const { id } = req.params;
   
-      // Extract the update data from the request body
-      const updateData = req.body;
+      const { name, reference_name, age, number, address, category, joining_date } = req.body;
+
+      // Ensure req.files is defined and properly handles missing files
+      const photoFile = req.files && req.files['photo'] ? req.files['photo'][0] : null;
+      const adharPhotoFile = req.files && req.files['adhar_photo'] ? req.files['adhar_photo'][0] : null;
+  
+      // Check if photo file is present
+      if (!photoFile) {
+        throw new Error('Photo file is required');
+      }
+  
+      // Check if adhar photo file is present
+      if (!adharPhotoFile) {
+        throw new Error('Adhar photo file is required');
+      }
+
+          // Handle photo upload
+      const photoPath = await saveImageFile('profile', `${id}`, photoFile);
+      photo = process.env.BASE_URL + photoPath.filePath;
+
+      // Handle adhar photo upload
+      const adharPath = await saveImageFile('adhar', `${id}`, adharPhotoFile);
+      adhar_photo = process.env.BASE_URL + adharPath.filePath;
+
   
       // Update the employee by ID
-      const updatedEmployee = await Employee.findByIdAndUpdate(id, updateData, { new: true });
+      const updatedEmployee = await Employee.findByIdAndUpdate(id, {
+        name, reference_name, age, number, address, category, joining_date, photo, adhar_photo
+      }, { new: true });
   
       if (!updatedEmployee) {
         return res.status(404).json({ message: 'Employee not found' });

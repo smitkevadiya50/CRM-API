@@ -1,4 +1,6 @@
 const Site = require('../models/site');
+const Attendance = require('../models/attendance');
+const {saveImageFile, deleteImageFile} = require('./imageUploadController')
 
 const getSite = async (req, res) => {
     try {
@@ -12,6 +14,19 @@ const getSite = async (req, res) => {
 const addSite = async (req, res) => {
     try {
         const { site_name, site_location, owner_name, owner_number, supervisor, manager, worker, helper, joining_date, ending_date, start_time, end_time, site_logo } = req.body;
+        // Ensure req.files is defined and properly handles missing files
+        const logoFile = req.files && req.files['site_logo'] ? req.files['site_logo'][0] : null;
+
+         const workerList = worker ? worker.split(','): [];
+         const helperlist = helper ? helper.split(','): [];
+         const managerId = manager ? manager : null;
+         const supervisorId = supervisor ? supervisor : null;
+
+        console.log(helper);
+        // Check if photo file is present
+        if (!logoFile) {
+          throw new Error('logo file is required');
+        }
 
         // Create a new site document
         const newSite = new Site({
@@ -19,16 +34,21 @@ const addSite = async (req, res) => {
             site_location,
             owner_name,
             owner_number,
-            supervisor,
-            manager,
-            worker,
-            helper,
+            supervisor: supervisorId,
+            manager: managerId,
+            worker: workerList,
+            helper: helperlist,
             joining_date,
             ending_date,
             start_time,
-            end_time,
-            site_logo
+            end_time
         });
+
+        const siteId = newSite._id;
+
+        // Handle logo upload
+        const logoPath = await saveImageFile('logo', `${siteId}`, logoFile);
+        newSite.site_logo = process.env.BASE_URL + logoPath.filePath;
 
         // Save the site document to the database
         const savedSite = await newSite.save();
@@ -45,11 +65,35 @@ const updateSite = async (req, res) => {
       // Extract the site ID from the request parameters
       const { id } = req.params;
   
-      // Extract the update data from the request body
-      const updateData = req.body;
+      const { site_name, site_location, owner_name, owner_number, supervisor, manager, worker, helper, joining_date, ending_date, start_time, end_time } = req.body;
+      // Ensure req.files is defined and properly handles missing files
+      const logoFile = req.files && req.files['site_logo'] ? req.files['site_logo'][0] : null;
+
+      // Check if photo file is present
+      if (!logoFile) {
+        throw new Error('logo file is required');
+      }
+
+      // Handle logo upload
+      const logoPath = await saveImageFile('logo', `${id}`, logoFile);
+      site_logo = process.env.BASE_URL + logoPath.filePath;
   
       // Update the site by ID
-      const updatedSite = await Site.findByIdAndUpdate(id, updateData, { new: true });
+      const updatedSite = await Site.findByIdAndUpdate(id, { 
+        site_name, 
+        site_location, 
+        owner_name, 
+        owner_number, 
+        supervisor, manager, 
+        worker, 
+        helper, 
+        joining_date, 
+        ending_date, 
+        start_time, 
+        end_time, 
+        site_logo 
+
+      }, { new: true });
   
       if (!updatedSite) {
         return res.status(404).json({ message: 'Site not found' });
@@ -67,6 +111,8 @@ const updateSite = async (req, res) => {
       const { id } = req.params;
 
       const deleteSite = await Site.findByIdAndDelete(id);
+      deleteImageFile('logo', id);
+      await Attendance.deleteMany({ site_id: id });
   
       if (!deleteSite) {
         return res.status(404).json({ message: 'Site not found' });

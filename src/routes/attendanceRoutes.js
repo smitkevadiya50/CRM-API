@@ -5,10 +5,9 @@ const router = express.Router();
 const {getAttendance, markStartTime, markEndTime} = require('../controller/attendanceController');
 
 // Define routes
+router.get('/', getAttendance);
 router.post('/start', markStartTime);
 router.post('/end', markEndTime);
-
-  
 
 // Export the router
 module.exports = router;

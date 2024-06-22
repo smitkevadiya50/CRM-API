@@ -3,6 +3,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 const cors = require('cors'); 
+const path = require('path');
+
+
 
 // Routes
 const employeeRoutes = require('./src/routes/employeeRoutes');
@@ -12,6 +15,7 @@ const attendanceRoutes = require('./src/routes/attendanceRoutes');
 
 // Middleware to parse JSON
 app.use(express.json());
+
 
 // Enable CORS for all routes
 app.use(cors());
@@ -33,6 +37,7 @@ app.use('/employee', employeeRoutes);
 app.use('/site', siteRoutes);
 app.use('/category', categoryRoutes);
 app.use('/attendance', attendanceRoutes);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Start the server
 const PORT = process.env.PORT || 3000;
