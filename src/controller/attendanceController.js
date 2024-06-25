@@ -1,6 +1,7 @@
 const Attendance = require('../models/attendance');
 const Site = require('../models/site');
 const Employee = require('../models/employee');
+const Category = require('../models/category');
 
 const getAttendance = async (req, res) => {
     try {
@@ -134,8 +135,67 @@ const markEndTime = async (req, res) => {
   }
 };
 
+const getCurrentMonthData = async (req, res) => {
+  try {
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  
+    const sites = await Site.find().exec();
+    const attendanceRecords = await Attendance.find({
+      date: { $gte: firstDay, $lte: lastDay },
+    })
+      .populate('employee_id')
+      .exec();
+  
+    const workerCategory = await Category.findOne({ name: 'Worker' }).exec();
+    const helperCategory = await Category.findOne({ name: 'Helper' }).exec();
+  
+    const result = [];
+  
+    sites.forEach((site) => {
+      const siteAttendanceRecords = attendanceRecords.filter(record => record.site_id.equals(site._id));
+      const siteData = {};
+  
+      siteAttendanceRecords.forEach(record => {
+        const dateKey = record.date.toISOString().split('T')[0];
+  
+        if (!siteData[dateKey]) {
+          siteData[dateKey] = {
+            date: dateKey,
+            site_name: site.site_name,
+            site_id: site._id,
+            total_worker: site.worker.length,
+            total_helper: site.helper.length,
+            total_worker_arrived: 0,
+            total_helper_arrived: 0,
+          };
+        }
+  
+        const isWorker = record.employee_id.category.equals(workerCategory._id);
+        const isHelper = record.employee_id.category.equals(helperCategory._id);
+  
+        if (isWorker) {
+          siteData[dateKey].total_worker_arrived++;
+        } else if (isHelper) {
+          siteData[dateKey].total_helper_arrived++;
+        }
+      });
+  
+      result.push(...Object.values(siteData));
+    });  
+
+    res.status(200).json(result);
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
 module.exports = {
   getAttendance,
   markStartTime,
-  markEndTime
+  markEndTime,
+  getCurrentMonthData
 };
