@@ -12,6 +12,7 @@ const employeeRoutes = require('./src/routes/employeeRoutes');
 const siteRoutes = require('./src/routes/siteRoutes');
 const categoryRoutes = require('./src/routes/categoryRoutes');
 const attendanceRoutes = require('./src/routes/attendanceRoutes');
+const eventRoutes = require('./src/routes/eventRoutes');
 
 // Middleware to parse JSON
 app.use(express.json());
@@ -37,6 +38,7 @@ app.use('/employee', employeeRoutes);
 app.use('/site', siteRoutes);
 app.use('/category', categoryRoutes);
 app.use('/attendance', attendanceRoutes);
+app.use('/event', eventRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Start the server
