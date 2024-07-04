@@ -37,6 +37,7 @@ const getSiteByManager = async (req, res) => {
 
     for (const site of sites) {
       let siteDetails = {
+        site_id: site.id,
         site_name: site.site_name,
         site_location: site.site_location,
         owner_name: site.owner_name,

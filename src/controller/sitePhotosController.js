@@ -4,12 +4,15 @@ const {saveImageFile} = require('./imageUploadController')
 //Get Site photos by the Site_id and the date
 const getSitePhots = async (req, res) => {
     try {
-        const {site_id, date } = req.body;
+        const {site_id, date } = req.query;
         const startOfDay = new Date(date);
 
         const sitePhotos = await SitePhotos.find({
             site_id: site_id,
             uploadDate: startOfDay
+        }).populate({
+           path: "site_id",
+           select: "site_name site_location" 
         });
         res.status(200).json({sitePhotos});
     } catch (error) {
@@ -29,11 +32,16 @@ const addSitePhots = async (req, res) => {
         });
 
         const sitePhotosPath = await saveImageFile('site', `${sitePhotos._id}`, sitePhotoFile);
-        sitePhotos.url = process.env.BASE_URL + sitePhotosPath.filePath;
+        sitePhotos.url = "http://192.168.178.50:3001" + sitePhotosPath.filePath;
 
         const savedSitePhotos = await sitePhotos.save();
 
-        res.status(200).json({savedSitePhotos});
+        const populatedPhoto = await savedSitePhotos.populate({
+            path: "site_id",
+            select: "site_name site_location" 
+         });
+
+        res.status(200).json(populatedPhoto);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
