@@ -1,5 +1,6 @@
 const Site = require('../models/site');
 const Attendance = require('../models/attendance');
+const Employee = require('../models/employee');
 const {saveImageFile, deleteImageFile} = require('./imageUploadController')
 
 const getSite = async (req, res) => {
@@ -9,6 +10,69 @@ const getSite = async (req, res) => {
     } catch (error) {
         res.status(500).send(error);
     }
+};
+
+const getSiteByManager = async (req, res) => {
+
+  try {
+    const { managerId, date } = req.query;
+    const startOfDay = new Date(date).setHours(0, 0, 0, 0);
+
+    const sites = await Site.find({manager: managerId}).populate({
+      path: "worker",
+      select: "name reference_name photo"
+    }).populate({
+      path: "helper",
+      select: "name reference_name photo"
+    }).populate({
+      path: "manager",
+      select: "name reference_name photo"
+    }).populate({
+      path: "supervisor",
+      select: "name reference_name photo"
+    });
+
+    const attendanceRecords = await Attendance.find({ date: startOfDay });
+    let siteDetailsList = [];
+
+    for (const site of sites) {
+      let siteDetails = {
+        site_name: site.site_name,
+        site_location: site.site_location,
+        owner_name: site.owner_name,
+        owner_number: site.owner_number,
+        site_logo: site.site_logo,
+        supervisor: site.supervisor,
+        manager: site.manager,
+        worker: [],
+        helper: []
+      };
+      // Integrate workers with attendance
+
+      for (const worker of site.worker) {
+        const workerWithAttendance = {
+          ...worker.toObject(),
+          attendance: attendanceRecords.find(record => record.employee_id.equals(worker._id) && record.site_id.equals(site._id)) || null
+        };
+        siteDetails.worker.push(workerWithAttendance);
+      }
+
+      // Integrate helpers with attendance
+      for (const helper of site.helper) {
+        const helperWithAttendance = {
+          ...helper.toObject(),
+          attendance: attendanceRecords.find(record => record.employee_id.equals(helper._id) && record.site_id.equals(site._id)) || null
+        };
+        siteDetails.helper.push(helperWithAttendance);
+      }
+      siteDetailsList.push(siteDetails);
+    }
+    
+
+    res.status(200).json({"sites":siteDetailsList});    
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
 };
 
 const addSite = async (req, res) => {
@@ -127,5 +191,6 @@ module.exports = {
     addSite,
     getSite,
     updateSite,
-    deleteSite
+    deleteSite,
+    getSiteByManager
 };

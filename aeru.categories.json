@@ -1,0 +1,32 @@
+[{
+  "_id": {
+    "$oid": "66737b647ca8abd0e8dbaee4"
+  },
+  "name": "Worker",
+  "__v": 0,
+  "salary": 7000
+},
+{
+  "_id": {
+    "$oid": "66737bbc7ca8abd0e8dbaee7"
+  },
+  "name": "Manager",
+  "__v": 0,
+  "salary": 12000
+},
+{
+  "_id": {
+    "$oid": "66737bd17ca8abd0e8dbaee9"
+  },
+  "name": "Supervisor",
+  "__v": 0,
+  "salary": 10000
+},
+{
+  "_id": {
+    "$oid": "667467adb1f1a69a1f7b17d7"
+  },
+  "name": "Helper",
+  "__v": 0,
+  "salary": 9000
+}]

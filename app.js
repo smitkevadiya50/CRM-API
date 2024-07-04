@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const app = express();
 const cors = require('cors'); 
 const path = require('path');
-
+const multer = require('multer');
 
 
 // Routes
@@ -13,6 +13,8 @@ const siteRoutes = require('./src/routes/siteRoutes');
 const categoryRoutes = require('./src/routes/categoryRoutes');
 const attendanceRoutes = require('./src/routes/attendanceRoutes');
 const eventRoutes = require('./src/routes/eventRoutes');
+const sitePhotosRoutes = require('./src/routes/sitePhotosRoutes');
+//const faceController = require('./src/controller/faceController');
 
 // Middleware to parse JSON
 app.use(express.json());
@@ -39,7 +41,21 @@ app.use('/site', siteRoutes);
 app.use('/category', categoryRoutes);
 app.use('/attendance', attendanceRoutes);
 app.use('/event', eventRoutes);
+app.use('/sitePhotos', sitePhotosRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+//faceController.loadModels();
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+  }
+});
+const upload = multer({ storage: storage });
+
+//app.post('/detect', upload.single('image'), faceController.detectFace);
 
 // Start the server
 const PORT = process.env.PORT || 3000;
